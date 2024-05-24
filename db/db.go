@@ -3,8 +3,9 @@ package db
 import (
 	"context"
 	"fmt"
-	"os"
+	"log"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,27 +15,12 @@ var collection *mongo.Collection
 
 func ConnectToMongo() (*mongo.Client, error) {
 
+	envFile, _ := godotenv.Read(".env")
+	username := envFile["MONGO_DB_USERNAME"]
+	password := envFile["MONGO_DB_PASSWORD"]
+
 	//mongodb connection string
-	mongoDbUri := os.Getenv("MONGO_DB_URI")
-	// clientOptions := options.Client().ApplyURI(mongoDbUri)
-	// username := os.Getenv("USERNAME")
-	// password := os.Getenv("PASSWORD")
-
-	//set auth
-	// clientOptions.SetAuth(options.Credential{
-	// 	Username: username,
-	// 	Password: password,
-	// })
-
-	//connect to mongo
-	// client, err := mongo.Connect(context.Background(), clientOptions)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return nil, err
-	// }
-
-	// log.Print("connected to mongodb")
-	// return client, nil
+	mongoDbUri := "mongodb+srv://" + username + ":" + password + "@todo-app.fgfkpka.mongodb.net/?retryWrites=true&w=majority&appName=todo-app"
 
 	// Use the SetServerAPIOptions() method to set the version of the Stable API on the client
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
@@ -43,6 +29,7 @@ func ConnectToMongo() (*mongo.Client, error) {
 	// Create a new client and connect to the server
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
+		log.Println("db username: " + username)
 		panic(err)
 	}
 
